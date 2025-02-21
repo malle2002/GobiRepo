@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\SpeciesController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -26,12 +26,14 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/pets/{pet}/images', [PetController::class, 'uploadImages']);
     Route::put('/pets/{pet}', [PetController::class, 'update']);
     Route::delete('/pets/{pet}', [PetController::class, 'destroy']);
+
+    Route::post('/messages', [MessageController::class, 'sendMessage']);
+    Route::get('/messages/{userId}', [MessageController::class, 'getMessages']);
 });
 
 Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirectToProvider']);
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'handleProviderCallback']);
-Route::post('/auth/complete-registration', [SocialAuthController::class, 'completeRegistration']);
 
 Route::get('/sanctum/csrf-cookie', function () {
     return response()->json(['csrfToken' => csrf_token()]);

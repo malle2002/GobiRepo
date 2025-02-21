@@ -65,6 +65,8 @@ class AuthController extends Controller
             'message' => "Login Successful",
             'access_token' => $token,
         ], 200);
+
+        // return response("Login Successful")->withCookie(cookie('token', $token));
     }
 
     public function logout(Request $request)

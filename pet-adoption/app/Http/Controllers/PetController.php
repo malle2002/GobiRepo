@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Pets\PetIndexRequest;
 use App\Http\Requests\Pets\StorePetRequest;
 use App\Http\Resources\PetResource;
 use App\Models\Pet;
-use Cloudinary\Cloudinary as CloudinaryCloudinary;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Cloudinary\Cloudinary as Cloudinary;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +20,14 @@ class PetController extends Controller
      */
     public function index()
     {
-        return PetResource::collection(Pet::all());
+        $user = auth('sanctum')->user();
+        $pets = null;
+        if($user) {
+            $pets = Pet::where("user_id", $user->id)->paginate(10);
+        } else {
+            $pets = Pet::all();
+        }
+        return PetResource::collection($pets);
     }
 
     /**
@@ -30,7 +37,7 @@ class PetController extends Controller
     {
         $validated = $request->validated();
 
-        $cloudinary = new CloudinaryCloudinary();
+        $cloudinary = new Cloudinary();
 
         $imageUrls = [];
         if ($request->hasFile('images')) {
@@ -57,7 +64,6 @@ class PetController extends Controller
         return new PetResource($pet);
     }
 
-
     /**
      * Display the specified resource.
      */
@@ -78,7 +84,6 @@ class PetController extends Controller
         return new PetResource($pet);
     }
 
-    // Delete a pet
     public function destroy(Pet $pet)
     {
         $this->authorize('delete', $pet);
