@@ -6,6 +6,7 @@ import Pagination from "@/src/components/Pagination";
 import useSelectedPet from "@/src/hooks/profile/useSelectedPet";
 import useProfile from "@/src/hooks/profile/useProfile";
 import LoadingComponent from "@/src/components/LoadingComponent";
+import usePets from "@/src/hooks/profile/usePets";
 
 const Profile = () => {
   const { selectedPet, setSelectedPet } = useSelectedPet();
@@ -17,12 +18,10 @@ const Profile = () => {
     speciesOptions,
     speciesMap,
     openIndex, setOpenIndex, 
-    pets, 
-    pagination, 
     loading,
-    setPage, 
     handleDeleteSpecies, handleSave, handleSpeciesChange, handleSpeciesPreferenceChange, togglePreference
   } = useProfile();
+  const { pets, pagination, page, setPage } = usePets();
 
   if (loading) {
     return <LoadingComponent/>

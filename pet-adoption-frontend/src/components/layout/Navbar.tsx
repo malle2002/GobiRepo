@@ -25,6 +25,7 @@ export default function Navbar() {
                     <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow gap-4">
                         <li><Link href="/">Home</Link></li>
                         <li><Link href="/find-a-pet">Find a Pet</Link></li>
+                        <li><Link href="/pets/upload-a-pet" className='rounded-full'>Upload a Pet</Link></li>
                         <li><Link href="/contact-us">Contacts</Link></li>
                         <li><Link href="/about-us">About Us</Link></li>
                     </ul>
@@ -39,9 +40,6 @@ export default function Navbar() {
                     <Image alt="logo" height={32} width={32} src={"/paw_logo.png"}/>
                     {APP_INFORMATION.name}
                 </a>
-                <Link href="/pets/add">
-                    <button type="button" className='btn btn-outline rounded-badge size-fit ml-5 md:hidden'><span className='text-2xl'>+</span></button>
-                </Link>
                 <ul className="menu menu-horizontal px-1 hidden lg:flex text-base gap-2">
                     <li><Link href="/" className='rounded-full'>Home</Link></li>
                     <li><Link href="/find-a-pet" className='rounded-full'>Find a Pet</Link></li>

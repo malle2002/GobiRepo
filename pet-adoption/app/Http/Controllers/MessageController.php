@@ -6,11 +6,42 @@ use App\Events\MessageSent;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
-    public function sendMessage(Request $request): Response
+    public function getUsers()
+    {
+        $userId = Auth::id();
+        return User::whereHas('messagesReceived', function ($query) use ($userId) {
+            $query->where('sender_id', $userId);
+        })->orWhereHas('messagesSent', function ($query) use ($userId) {
+            $query->where('receiver_id', $userId);
+        })->get(['id', 'name']);
+    }
+
+    public function getMessages(Request $request, string $otherUserId)
+    {
+        $currentUserId = auth('sanctum')->id();
+        $perPage = $request->query('per_page', 10);
+        $page = $request->query('page', 1);
+
+        $messages = Message::where(function ($query) use ($currentUserId, $otherUserId) {
+            $query->where('sender_id', $currentUserId)
+                ->where('receiver_id', $otherUserId);
+        })->orWhere(function ($query) use ($currentUserId, $otherUserId) {
+            $query->where('sender_id', $otherUserId)
+                ->where('receiver_id', $currentUserId);
+        })->orderBy('created_at')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'messages' => $messages->items(),
+            'has_more' => $messages->hasMorePages()
+        ]);
+    }
+
+    public function sendMessage(Request $request)
     {
         $request->validate([
             'sender_id' => 'required|exists:users,id',
@@ -18,49 +49,18 @@ class MessageController extends Controller
             'message' => 'required|string',
         ]);
 
-        $receiver =  User::find($request->user_id);
-        $sender =  User::find($request->from);
+        if(!($request->sender_id === auth('sanctum')->id())) {
+            return response()->json("Invalid message sent");
+        }
 
-        Message::create([
+        $message = Message::create([
             'sender_id' => $request->sender_id,
             'receiver_id' => $request->receiver_id,
             'message' => $request->message,
         ]);
 
-        broadcast(new MessageSent($receiver, $sender, $request->message));
+        broadcast(new MessageSent($message))->toOthers();
 
-        return response()->noContent();
-    }
-
-    public function getMessages($userId)
-    {
-        $messageOut = Message::where('receiver_id', $userId)->get();
-        $messagesIn = Message::where('sender_id', $userId)->get();
-
-        return response()->json([ "messagesSent" => $messageOut, "messagesReceived" => $messagesIn ]);
-    }
-
-    public function getConversations(Request $request)
-    {
-        $userId = $request->user()->id;
-
-        $conversations = Message::where('sender_id', $userId)
-            ->orWhere('receiver_id', $userId)
-            ->with(['sender:id,name,avatar', 'receiver:id,name,avatar'])
-            ->get()
-            ->groupBy(function ($msg) use ($userId) {
-                return $msg->sender_id == $userId ? $msg->receiver_id : $msg->sender_id;
-            })
-            ->map(function ($msgs) {
-                $user = $msgs->first()->sender_id == auth('sanctum')->id() ? $msgs->first()->receiver : $msgs->first()->sender;
-                return [
-                    'userId' => $user->id,
-                    'name' => $user->name,
-                    'avatar' => $user->avatar,
-                ];
-            })
-            ->values();
-
-        return response()->json($conversations);
+        return response()->json($message);
     }
 }

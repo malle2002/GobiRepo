@@ -1,3 +1,5 @@
+"use server"
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { getServerSession } from "next-auth";
@@ -22,6 +24,7 @@ export async function GET(req: NextRequest) {
       include: {
         users: {
           select: {
+            id: true,
             name: true,
             email: true,
             avatar: true,
@@ -43,17 +46,11 @@ export async function POST(req: NextRequest) {
         if (!session || !session.user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
+        const token = session?.user?.accessToken;
 
         const formData = await req.formData();
 
-        const response = await axios.post('/api/pets', 
-            formData,
-            { 
-                headers: {
-                    'Authorization': `Bearer ${session.user.accessToken}`,
-                },
-            }
-        );
+        const response = await axios.post('/api/pets', formData, { headers: { Authorization: `Bearer ${token}`}});
 
         const responseData = await response.data;
 

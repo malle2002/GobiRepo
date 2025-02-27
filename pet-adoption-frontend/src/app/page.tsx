@@ -3,6 +3,8 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Gallery from '@/src/components/Gallery';
+import Image from 'next/image';
+import TypingEffect from '../components/TypingEffect';
 
 export default function Home() {
 
@@ -40,16 +42,20 @@ export default function Home() {
     <div className="container mx-auto p-6">
       {/* Header Section */}
       <Section>
-        <h1 className="text-xl md:text-5xl font-extrabold text-transparent bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-600 bg-clip-text mb-4">
-          Welcome to Gobi
-        </h1>
-        <p className="text-lg text-gray-700 mb-8">
-          Find your perfect companion today and make a difference in a pet&apos;s life
-        </p>
+        <div className='flex flex-row justify-between w-full'>
+          <div className="chat chat-end w-full h-full items-center">
+            <div className="flex flex-col w-full rounded-badge chat-bubble p-4">
+              <TypingEffect text={
+                "  Welcome to Gobi, where loving pets find their perfect forever homes! Whether you're looking for a loyal dog, a playful cat, or a small furry friend, we connect you with adoptable pets that match your lifestyle. Our platform makes it easy to search by species, breed, age, and personality to find the perfect companion. We work with trusted shelters and rescues to ensure every pet gets the love and care they deserve. Create a profile, set your preferences, and start your journey toward adopting a new best friend today. Together, we can give every pet a second chance at happiness. Start exploring and find your perfect match!"
+              }/>
+            </div>
+          </div>
 
-        <p>Find or Post any kind of pet for adoption</p>
+          <div className="w-full">
+            <img className="w-full" src="https://pngimg.com/d/dog_PNG50375.png" alt="dummy-image" />
+          </div>
+        </div>
         
-        <Gallery/>
       </Section>
 
       {/* About Section */}

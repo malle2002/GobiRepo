@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { useAuth } from '@/src/hooks/auth/useAuth';
-import Menu from '@/src/components/Menu';
+import Menu from '@/src/components/layout/Menu';
 import Footer from '@/src/components/layout/Footer';
 import Navbar from '@/src/components/layout/Navbar';
 import LoadingComponent from '@/src/components/LoadingComponent';
+import ChatButton from '@/src/components/chat/ChatButton';
 
 interface LayoutProps {
   children: ReactNode;
@@ -46,6 +47,8 @@ const Layout = ({ children }: LayoutProps) => {
       </div>
 
       <main className="flex-grow">{children}</main>
+
+      <ChatButton session={session} />
       <Footer/>
     </div>
   );

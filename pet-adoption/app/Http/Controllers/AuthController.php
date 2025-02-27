@@ -6,7 +6,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -18,14 +17,21 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email|max:255',
+            'email' => 'required|email|max:255',
             'password' => 'required|string|min:8|max:255'
         ]);
+
+        if (User::where('email', $data['email'])->where('provider', "none")->exists()) {
+            return response()->json([
+                'message' => 'The email is already registered.'
+            ], 422);
+        }
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password'])
+            'password' => Hash::make($data['password']),
+            'provider' => "none"
         ]);
 
         if($user) {
@@ -51,8 +57,10 @@ class AuthController extends Controller
             'password' => 'required|string|max:255|min:8'
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
+        $user = User::where('email', $request->email)
+                ->where('provider', "none")
+                ->first();
+        
         if (!$user || !Hash::check($request->password,$user->password)) {
             return response()->json(['error' => 'The provided credentials are incorrect'], 401);
         }

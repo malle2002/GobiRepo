@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Preference;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -12,6 +13,15 @@ class UserController extends Controller
     {
         $user = $request->user()->load('preferences');
         return response()->json($user);
+    }
+
+    public function getUserById(string $id) {
+        $user = User::find($id);
+        if($user) {
+            return response()->json(["message" => "User successfully fetched", "user" => $user]);
+        } else {
+            return response()->json("Error not found", 404);
+        }
     }
 
     public function updateUser(Request $request): JsonResponse

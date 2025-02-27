@@ -2,16 +2,15 @@
 
 import "./globals.css";
 import { Poppins } from "next/font/google";
-import { ThemeProvider } from '@/src/context/ThemeContext';
+import { ThemeProvider } from '@/src/providers/ThemeProvider';
 import { SessionProvider } from "next-auth/react";
-import { ChatProvider } from "../context/ChatContext";
 import Layout from "./layout/index";
+import { ChatProvider } from "../providers/ChatProvider";
 
 const poppins = Poppins({
   weight: "500",
   subsets: ["latin"],
 });
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
