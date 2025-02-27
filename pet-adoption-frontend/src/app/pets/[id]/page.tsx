@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import usePetProfile from "@/src/hooks/pets/usePetProfile";
+import Gallery from "@/src/components/Gallery";
+import ImageCarousel from "@/src/components/ImageCarousel";
 
 const PetDetails = () => {
   const { pet, loading } = usePetProfile();
@@ -20,47 +22,58 @@ const PetDetails = () => {
 
   return (
     <div className="container place-self-center p-4">
-      <h1 className="text-3xl font-bold mb-4">{pet.name}</h1>
+      <div className="flex flex-col">
+        <ImageCarousel petName={pet.name} images={pet.images} />
+        <div className="flex flex-row">
+            <div className="md:w-1/2 md:ml-8 flex flex-row justify-between card shadow-lg p-5 bg-secondary bg-opacity-50 mt-5">
+              <div>
+                <p className="text-lg font-semibold">Species: {pet.species}</p>
+                <p className="text-lg font-semibold">Breed: {pet.breed}</p>
+                <p className="text-lg font-semibold">Age: {pet.age}</p>
+                <p className="text-lg font-semibold">Gender: {pet.gender}</p>
+                <p className="mt-4 text-gray-600">{pet.description || "No description available."}</p>
+              </div>
+              <div className="flex flex-row justify-between">
+                <div className="md:w-fit p-6 md:ml-8 card shadow-lg bg-green-300 mt-5">
+                  <div>
+                    <h1>Vaccinations:</h1>
+                    {pet?.vaccinations?.split(',').map((v, index) => (
+                        <p key={index}>{v}</p>
+                    ))}
+                  </div>
+                </div>
+                <div className="md:w-fit p-6 md:ml-8 card shadow-lg bg-red-300 mt-5">
+                  <div>
+                    <h1>Allergies:</h1>
+                    {pet?.allergies?.split(',').map((v, index) => (
+                        <span key={index}>{v}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+            </div>
 
-      <div className="flex flex-col md:flex-row">
-        <div className="md:w-1/3">
-          <Image
-            src={pet.images?.[0] || "/placeholder.jpg"}
-            alt={pet.name}
-            width={300}
-            height={300}
-            className="rounded-lg shadow-lg w-full"
-          />
-        </div>
-
-        <div className="md:w-2/3 md:ml-8 flex flex-col justify-between">
-          <div>
-            <p className="text-lg font-semibold">Species: {pet.species}</p>
-            <p className="text-lg font-semibold">Breed: {pet.breed}</p>
-            <p className="text-lg font-semibold">Age: {pet.age}</p>
-            <p className="text-lg font-semibold">Gender: {pet.gender}</p>
-            <p className="mt-4 text-gray-600">{pet.description || "No description available."}</p>
-          </div>
-          
-          
-          <div className="mt-6">
-            <h2 className="text-2xl font-bold mb-2">Contact Information</h2>
-            <div className="flex items-center">
-              {pet.users.avatar && (
-                <Image
-                  src={pet.users.avatar}
-                  alt={pet.users.name}
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                />
-              )}
-              <div className="ml-3">
-                <p className="font-semibold">{pet.users.name}</p>
-                <p className="text-gray-600">{pet.users.email}</p>
+            <div className="md:w-1/2 md:ml-8 flex flex-col justify-between card shadow-lg p-5 bg-secondary bg-opacity-50 mt-5">
+              <div className="mt-6">
+                <h2 className="text-2xl font-bold mb-2">Contact Information</h2>
+                <div className="flex items-center">
+                  {pet.users.avatar && (
+                    <Image
+                      src={pet.users.avatar}
+                      alt={pet.users.name}
+                      width={50}
+                      height={50}
+                      className="rounded-full"
+                    />
+                  )}
+                  <div className="ml-5">
+                    <p className="font-semibold">Posted By: {pet.users.name}</p>
+                    <p className="text-gray-600">{pet.users.email}</p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
         </div>
       </div>
     </div>

@@ -62,10 +62,6 @@ export default function Register() {
                         autoComplete="new-password"
                     />
 
-                    <div className="text-right">
-                        <a href="#" className="text-sm text-gray-500 hover:text-primary hover:underline">Forgot Password?</a>
-                    </div>
-
                     <DisabledButtonOnClick disabled={loading} text="Sign up" textOnDisabled="Signing up..."/>
                 </form>
 

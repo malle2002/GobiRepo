@@ -1,12 +1,13 @@
 "use client";
 
+import UserActions from "@/src/components/UserActions";
 import useFindPets from "@/src/hooks/pets/useFindPets";
 import Image from "next/image";
-import { useChat } from "@/src/context/ChatContext";
+import { useRouter } from "next/navigation";
 
 const FindAPet = () => {
   const { pets, filters, setFilters, useFilters, setUseFilters, loading } = useFindPets();
-  const { openChat, activeChat, chats } = useChat();
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -16,8 +17,8 @@ const FindAPet = () => {
     );
   }
 
-  const handlePetInfoClick = (petId: string, userId: string) => {
-    openChat(userId);
+  const handlePetInfoClick = (petId: string) => {
+    router.push(`/pets/${petId}`);
   };
 
   return (
@@ -83,25 +84,14 @@ const FindAPet = () => {
               <div className="flex justify-between my-5 mt-auto">
                 <div
                   className="cursor-pointer"
-                  onClick={() => handlePetInfoClick(pet.id, pet.users.id)}
+                  onClick={() => handlePetInfoClick(pet.id)}
                 >
                   <h2 className="text-xl font-semibold mt-2">{pet.name}</h2>
                   <p className="text-gray-600">{pet.species} - {pet.breed}</p>
                   <p className="text-gray-500">Age: {pet.age}</p>
                   <p className="text-gray-500">Gender: {pet.gender}</p>
                 </div>
-                <div className="ml-auto text-right self-center">
-                  {pet.users.avatar && (
-                    <Image
-                      src={pet.users.avatar??null}
-                      height={36}
-                      width={36}
-                      alt={pet.users.name}
-                      className="rounded-full self-center w-full scale-75"
-                    />
-                  )}
-                  <p className="text-gray-600">{pet.users.name}</p>
-                </div>
+                <UserActions user={pet.users} />
               </div>
             </div>
           ))
@@ -109,20 +99,6 @@ const FindAPet = () => {
           <p className="text-center col-span-3">No pets found.</p>
         )}
       </div>
-
-      {/* Active chat component */}
-      {activeChat && (
-        <div className="chat-box">
-          {/* Display messages for the active chat */}
-          <div className="messages">
-            {chats[activeChat]?.messages.map((message, idx) => (
-              <div key={idx} className="message">
-                <p>{message}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

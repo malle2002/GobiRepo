@@ -1,6 +1,5 @@
 import axios from "@/src/lib/axios";
 import { useState, useEffect } from "react";
-import { useAuth } from "../auth/useAuth";
 
 const usePets = () => {
   const [pets, setPets] = useState([]);
@@ -8,15 +7,11 @@ const usePets = () => {
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
   const [page, setPage] = useState(1);
-  const { token } = useAuth();
 
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const response = await axios.get(`/api/pets?page=${page}`, {
-            headers: { "Authorization": `Bearer ${token}`},
-            withCredentials: true,
-        });
+        const response = await axios.get(`/api/pets?page=${page}`);
         setPets(response.data.data);
         setPagination({
           current_page: response.data.meta.current_page,
@@ -32,7 +27,7 @@ const usePets = () => {
     fetchPets();
   }, [page]);
 
-  return { pets, loading, error, pagination, page, setPage };
+  return { pets, setPets, loading, error, pagination, page, setPage };
 };
 
 export default usePets;

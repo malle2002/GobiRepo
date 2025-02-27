@@ -21,6 +21,7 @@ interface UserData {
     email: string;
     image?: string;
     speciesPreferences: SpeciesPreference[];
+    avatar?: string;
 }
 
 interface PetFormData {
@@ -33,7 +34,8 @@ interface PetFormData {
   vaccinations?: string;
   allergies?: string;
   location: string;
-  images: FileList;
+  images: string[];
+  users: UserData;
 }
 
 interface FormInputProps {

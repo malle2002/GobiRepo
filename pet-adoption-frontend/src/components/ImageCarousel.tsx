@@ -20,14 +20,15 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, petName }) => {
 
   return (
     <div className="relative w-full max-w-md mx-auto">
+      <h1 className='text-3xl text-center mb-5'>{petName}</h1>
       {/* Image Display */}
       <div className="relative">
         <Image
           src={images[currentIndex]}
           alt={`${petName} - Image ${currentIndex + 1}`}
-          width={128}
-          height={128}
-          className="w-full h-128 object-cover rounded-lg shadow-lg"
+          width={350}
+          height={350}
+          className="w-full h-full place-self-center object-cover rounded-lg shadow-lg"
         />
         <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
           {currentIndex + 1} / {images.length}
