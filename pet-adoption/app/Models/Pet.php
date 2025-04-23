@@ -14,13 +14,16 @@ class Pet extends Model
     public $incrementing = false;
     protected $fillable = [
         'user_id', 'name', 'species', 'breed', 'age', 'description',
-        'gender', 'vaccinations', 'allergies', 'location', 'images'
+        'gender', 'vaccinations', 'allergies', 'location', 'images',
+        'is_sponsored', 'sponsored_until', 'stripe_session_id'
     ];
 
     protected $casts = [
         'vaccinations' => 'array',
         'allergies' => 'array',
-        'images' => 'array'
+        'images' => 'array',
+        'is_sponsored' => 'boolean',
+        'sponsored_until' => 'datetime',
     ];
 
     public function user()

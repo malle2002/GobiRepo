@@ -3,6 +3,7 @@ import { Account, NextAuthOptions, Session, User } from "next-auth";
 import { JWT } from 'next-auth/jwt';
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
 
 export const authOptions : NextAuthOptions = {
   providers: [
@@ -10,37 +11,46 @@ export const authOptions : NextAuthOptions = {
         name: "Credentials",
         credentials: {
             email: { label: "Email", type: "text", placeholder: "example@.com" },
-            password: { label: "Passwrod", type: "password" },
+            password: { label: "Password", type: "password" },
         },
         async authorize(credentials) {
-            const res = await axios.post('/api/login', {
+            try { 
+              const res = await axios.post('/api/login', {
                 email: credentials?.email,
                 password: credentials?.password
-            }, {
-              headers: {
-                'Content-Type': 'application/json',
+              }, {
+                headers: {
+                  'Content-Type': 'application/json',
+                }
+              });
+
+              const user = await res.data;
+
+              if (user?.access_token) {
+                  return {
+                      id: user.id,
+                      name: user.name,
+                      email: user.email,
+                      accessToken: user.access_token,
+                      image: user.picture,
+                      provider: "credentials",
+                  };
               }
-            });
-
-            const user = await res.data;
-
-            if (user?.access_token) {
-                return {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    accessToken: user.access_token,
-                    image: user.picture,
-                    provider: "credentials",
-                };
+              return null;
+            } catch (err) {
+              console.log(err);
+              return null;
             }
-            return null;
         }
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_CLIENT_ID!,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+    })
   ],
   pages: {
     signIn: '/login',
@@ -57,6 +67,21 @@ export const authOptions : NextAuthOptions = {
           if (res.data.access_token) {
             token.accessToken = res.data.access_token;
             token.provider = account.provider;
+            token.id = res.data.user.id;
+          }
+        } catch (error) {
+          console.error("Error exchanging token:", error);
+        }
+      } else if ( account !== undefined && account?.provider == 'facebook') {
+        try {
+          const res = await axios.post("/api/auth/facebook", {
+            access_token: account.access_token
+          });
+    
+          if (res.data.access_token) {
+            token.accessToken = res.data.access_token;
+            token.provider = account.provider;
+            token.id = res.data.user.id;
           }
         } catch (error) {
           console.error("Error exchanging token:", error);
@@ -65,7 +90,7 @@ export const authOptions : NextAuthOptions = {
 
       if (user) {
         token.accessToken = (token.accessToken !== undefined && token.accessToken !== null) ? token.accessToken : user.accessToken;
-        token.id = user.id;
+        token.id = (token.id !== undefined && token.id !== null) ? token.id : user.id;
         token.name = user.name;
         token.email = user.email;
         token.provider = account?.provider??user.provider;

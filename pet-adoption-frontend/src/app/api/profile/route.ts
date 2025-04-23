@@ -12,17 +12,9 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const petsResponse = await axios.get('/api/pets', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const petsResponse = await axios.get('/api/pets');
 
-    const userResponse = await axios.get('/api/user', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }    
-    });
+    const userResponse = await axios.get('/api/user');
 
     return Response.json({
       pets: petsResponse.data.data,

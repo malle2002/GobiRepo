@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'dbw3zep4prcju.cloudfront.net',
+        hostname: 'www.dbw3zep4prcju.cloudfront.net',
         pathname: '**',
       },
       {
@@ -44,6 +44,21 @@ const nextConfig: NextConfig = {
         hostname: 'www.animalhumanesociety.org',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'pngimg.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: "via.placeholder.com",
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: "platform-lookaside.fbsbx.com",
+        pathname: '**',
+      }
     ],
   },
 };

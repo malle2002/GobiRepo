@@ -1,7 +1,6 @@
 import axios from "@/src/lib/axios";
 import { useState, useEffect } from "react";
 import { useAuth } from "../auth/useAuth";
-import usePets from "./usePets";
 
 const useProfile = () => {
     const [user, setUser] = useState<{ name: string; email: string; image: string; speciesPreferences: SpeciesPreference[] } | null>(null);
@@ -14,7 +13,7 @@ const useProfile = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
     const { isLoggedInFromGoogle, token } = useAuth();
     const isEmailEditable = !isLoggedInFromGoogle;
-    const { pets, pagination, page, setPage } = usePets();
+
 
     useEffect(() => {
         if (!token) {
@@ -25,47 +24,45 @@ const useProfile = () => {
         const fetchUserData = async () => {
             try {
             await axios.get("/sanctum/csrf-cookie").then(async () => {
-                const res = await axios.get("/api/user", {
-                headers: { Authorization: `Bearer ${token}` },
-                });
+                const res = await axios.get("/api/user");
         
                 if (res.status !== 200) throw new Error("Failed to fetch user data");
         
                 const mappedPreferences = res.data.preferences?.map((pref: SpeciesPreference) => ({
-                species: pref.species,
-                breeds: pref.breeds?.map((breed) => ({
-                    value: typeof breed === "string" ? breed : breed.value,
-                    label: typeof breed === "string" ? breed : breed.label
-                })) || [],          
-                age: pref.age || 0,
-                gender: pref.gender || "Any",
+                    species: pref.species,
+                    breeds: pref.breeds?.map((breed) => ({
+                        value: typeof breed === "string" ? breed : breed.value,
+                        label: typeof breed === "string" ? breed : breed.label
+                    })) || [],          
+                        age: pref.age || 0,
+                        gender: pref.gender || "Any",
                 })) || [];
         
                 setUser({
-                name: res.data.name,
-                email: res.data.email,
-                image: res.data.avatar,
-                speciesPreferences: mappedPreferences,
+                    name: res.data.name,
+                    email: res.data.email,
+                    image: res.data.avatar,
+                    speciesPreferences: mappedPreferences,
                 });
         
                 setFormData({ 
-                name: res.data.name,
-                email: res.data.email,
-                speciesPreferences: mappedPreferences 
+                    name: res.data.name,
+                    email: res.data.email,
+                    speciesPreferences: mappedPreferences 
                 });
         
                 setSpeciesOptions(prevSpeciesOptions =>
-                prevSpeciesOptions.filter(option =>
-                    !mappedPreferences.some((pref: SpeciesPreference) => pref.species === option.value)
-                )
+                    prevSpeciesOptions.filter(option =>
+                        !mappedPreferences.some((pref: SpeciesPreference) => pref.species === option.value)
+                    )
                 );
             });
             } catch (err: unknown) {
-            if(err instanceof Error) {
-                setError(err.message);
-            }
+                if(err instanceof Error) {
+                    setError(err.message);
+                }
             } finally {
-            setLoading(false);
+                setLoading(false);
             }
         };
         
@@ -144,9 +141,7 @@ const useProfile = () => {
                 })),
             };
         
-            const res = await axios.put("/api/user/update", formattedData, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const res = await axios.put("/api/user/update", formattedData);
         
             if (res.status !== 200) throw new Error("Failed to update profile");
             setUser(prevUser =>
@@ -182,8 +177,6 @@ const useProfile = () => {
         speciesOptions, setSpeciesOptions, 
         speciesMap, setSpeciesMap,
         openIndex, setOpenIndex,
-        pets, 
-        pagination, page, setPage,
         handleSpeciesChange, handleDeleteSpecies, handleSave, handleSpeciesPreferenceChange, togglePreference
     };
 };

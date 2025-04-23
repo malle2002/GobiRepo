@@ -16,11 +16,29 @@ interface ProfileFormProps {
     setFormData: React.Dispatch<React.SetStateAction<UserData>>;
 }
 
+interface PetData {
+    id: string;
+    name: string;
+    species: string;
+    breed: string;
+    age: number;
+    description?: string;
+    gender: string;
+    vaccinations?: string;
+    allergies?: string;
+    location: string;
+    images: string[];
+    user: UserData;
+    created_at: string;
+}
+
 interface UserData {
+    id: string;
     name: string;
     email: string;
     image?: string;
     speciesPreferences: SpeciesPreference[];
+    avatar?: string;
 }
 
 interface PetFormData {
@@ -33,7 +51,8 @@ interface PetFormData {
   vaccinations?: string;
   allergies?: string;
   location: string;
-  images: FileList;
+  images: string[];
+  user: UserData;
 }
 
 interface FormInputProps {
@@ -62,11 +81,20 @@ interface ThemeContextProps {
 }
 
 interface AuthFormProps {
-    type: "login" | "register";
+    type: "signin" | "signup";
 }
 
 interface FormDataType {
     name?: string;
     email: string;
     password: string;
+    confirmPassword: string;
+}
+
+interface FilterType {
+    species: string;
+    breeds: string[];
+    age: number;
+    gender: string;
+    location: string;
 }

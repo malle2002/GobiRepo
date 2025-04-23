@@ -16,6 +16,7 @@ export default function useUploadPet() {
 
   const [loading, setLoading] = useState(false);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [fetchPetsError, setFetchPetsError] = useState<string>();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -58,10 +59,10 @@ export default function useUploadPet() {
           setPreviewImages([]);
           router.push("/");
         } else {
-          throw new Error("Failed to add new pet.")
+          const data = await response.json();
+          setFetchPetsError(data?.error);
         };
       });
-      
     } catch (error: unknown) {
       if(error instanceof Error) {
         alert(error.message);
@@ -79,5 +80,6 @@ export default function useUploadPet() {
     loading,
     handleImageChange,
     previewImages,
+    fetchPetsError
   };
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Pets\PetIndexRequest;
 use App\Http\Requests\Pets\StorePetRequest;
 use App\Http\Resources\PetResource;
 use App\Models\Pet;
@@ -10,6 +9,7 @@ use Cloudinary\Cloudinary as Cloudinary;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\OpenAIValidator;
 
 class PetController extends Controller
 {
@@ -33,13 +33,22 @@ class PetController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePetRequest  $request)
+    public function store(StorePetRequest  $request, OpenAIValidator $validator)
     {
         $validated = $request->validated();
 
-        $cloudinary = new Cloudinary();
+        if (
+            !$validator->isValidAnimalTerm('species', $request->species) ||
+            !$validator->isValidAnimalTerm('breed', $request->breed)
+        ) {
+            return response()->json([
+                'message' => 'Invalid species or breed. Please enter a valid animal name.'
+            ], 422);
+        }
 
+        $cloudinary = new Cloudinary();
         $imageUrls = [];
+        
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $uploadResult = $cloudinary->uploadApi()->upload($image->getRealPath());
